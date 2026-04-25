@@ -53,7 +53,7 @@ export default function GalleryPage() {
 
   const fetchArtworks = async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/artworks/all`);
+      const res = await fetch(`/api/artworks/all`);
       if (res.ok) {
         const data = await res.json();
         const dbArts = data.map(dbArt => ({
@@ -121,7 +121,7 @@ export default function GalleryPage() {
     }
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/artworks`, {
+      const res = await fetch(`/api/artworks`, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",

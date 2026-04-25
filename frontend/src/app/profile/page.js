@@ -25,7 +25,7 @@ export default function Profile() {
         return;
       }
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/auth/me`, {
+      const res = await fetch(`/api/auth/me`, {
         headers: { "x-auth-token": token }
       });
       
@@ -52,7 +52,7 @@ export default function Profile() {
     e.preventDefault();
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/auth/profile`, {
+      const res = await fetch(`/api/auth/profile`, {
         method: "PUT",
         headers: { 
           "Content-Type": "application/json",

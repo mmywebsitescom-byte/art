@@ -353,7 +353,7 @@ export default function Home() {
     const imageData = targetCanvasRef.current.toDataURL("image/png");
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/artworks`, {
+      const res = await fetch(`/api/artworks`, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",

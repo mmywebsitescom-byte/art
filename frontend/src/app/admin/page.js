@@ -22,7 +22,7 @@ export default function AdminPage() {
     }
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/artworks/pending`, {
+      const res = await fetch(`/api/artworks/pending`, {
         headers: { "x-auth-token": token }
       });
       
@@ -45,7 +45,7 @@ export default function AdminPage() {
     const token = localStorage.getItem('token');
     if (!token) return;
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/artworks/admin/all`, {
+      const res = await fetch(`/api/artworks/admin/all`, {
         headers: { "x-auth-token": token }
       });
       if (res.ok) {
@@ -60,7 +60,7 @@ export default function AdminPage() {
   const handleStatusUpdate = async (id, newStatus) => {
     const token = localStorage.getItem('token');
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/artworks/${id}/status`, {
+      const res = await fetch(`/api/artworks/${id}/status`, {
         method: "PUT",
         headers: { 
           "Content-Type": "application/json",
@@ -87,7 +87,7 @@ export default function AdminPage() {
     
     const token = localStorage.getItem('token');
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/artworks/${id}`, {
+      const res = await fetch(`/api/artworks/${id}`, {
         method: "DELETE",
         headers: { "x-auth-token": token }
       });
