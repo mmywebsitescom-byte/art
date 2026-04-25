@@ -173,7 +173,7 @@ export default function Home() {
       };
       img.src = currentSrc;
     }
-  }, [imageSrc, isolatedImageSrc, isWebcamActive, options.isolateSubject]);
+  }, [imageSrc, isolatedImageSrc, isWebcamActive, options.isolateSubject, options.aspectRatio, options.focusHumans]);
 
   // Debounced processing for option changes
   useEffect(() => {
@@ -353,7 +353,7 @@ export default function Home() {
     const imageData = targetCanvasRef.current.toDataURL("image/png");
 
     try {
-      const res = await fetch("http://localhost:5000/api/artworks", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/artworks`, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
@@ -364,7 +364,7 @@ export default function Home() {
       
       if (res.ok) {
         const newArt = await res.json();
-        alert(`Artwork submitted!\n\nTo view this directly in your terminal, run:\ncurl.exe -s http://localhost:5000/api/artworks/${newArt._id}/raw`);
+        alert(`Artwork submitted!\n\nTo view this directly in your terminal, run:\ncurl.exe -s ${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/artworks/${newArt._id}/raw`);
       } else {
         const data = await res.json();
         alert(data.msg || "Failed to share to gallery.");

@@ -22,7 +22,7 @@ export default function Navbar() {
       setIsAuthenticated(!!token);
       
       if (token) {
-        fetch('http://localhost:5000/api/auth/me', {
+        fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/auth/me`, {
           headers: { 'x-auth-token': token }
         })
         .then(res => res.json())

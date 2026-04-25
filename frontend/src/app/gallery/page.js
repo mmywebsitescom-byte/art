@@ -53,7 +53,7 @@ export default function GalleryPage() {
 
   const fetchArtworks = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/artworks/all");
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/artworks/all`);
       if (res.ok) {
         const data = await res.json();
         const dbArts = data.map(dbArt => ({
@@ -121,7 +121,7 @@ export default function GalleryPage() {
     }
 
     try {
-      const res = await fetch("http://localhost:5000/api/artworks", {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/artworks`, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
@@ -136,7 +136,7 @@ export default function GalleryPage() {
         setUploadTitle("");
         setUploadAscii("");
         setUploadImage("");
-        alert(`Artwork submitted for approval!\n\nTo view this directly in your terminal, run:\ncurl.exe -s http://localhost:5000/api/artworks/${newArt._id}/raw`);
+        alert(`Artwork submitted for approval!\n\nTo view this directly in your terminal, run:\ncurl.exe -s ${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/artworks/${newArt._id}/raw`);
       } else {
         const data = await res.json();
         alert(data.msg || "Failed to upload artwork.");
@@ -277,7 +277,7 @@ export default function GalleryPage() {
                 <div className="flex gap-2 items-center">
                   <span onClick={() => {
                     if (art.fullId) {
-                      prompt("Copy this command and run it in your terminal:", `curl.exe -s http://localhost:5000/api/artworks/${art.fullId}/raw`);
+                      prompt("Copy this command and run it in your terminal:", `curl.exe -s ${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/artworks/${art.fullId}/raw`);
                     } else {
                       alert("This is a local demo artwork and does not support CLI export.");
                     }
