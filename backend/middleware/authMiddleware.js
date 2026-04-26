@@ -1,16 +1,35 @@
-const jwt = require('jsonwebtoken');
+const admin = require('../config/firebase');
+const User = require('../models/User');
 
-module.exports = function(req, res, next) {
+module.exports = async function(req, res, next) {
     const token = req.header('x-auth-token');
     if (!token) {
         return res.status(401).json({ msg: 'No token, authorization denied' });
     }
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        req.user = decoded.user;
+        const decodedToken = await admin.auth().verifyIdToken(token);
+        
+        let user = await User.findOne({ email: decodedToken.email });
+        if (!user) {
+            let username = decodedToken.email.split('@')[0];
+            let existingUsername = await User.findOne({ username });
+            if (existingUsername) {
+                username = `${username}_${Math.floor(Math.random() * 10000)}`;
+            }
+            user = new User({
+                username,
+                email: decodedToken.email,
+                role: 'student',
+                source: 'firebase'
+            });
+            await user.save();
+        }
+
+        req.user = { id: user.id };
         next();
     } catch (err) {
+        console.error('Firebase Auth Error:', err.message);
         res.status(401).json({ msg: 'Token is not valid' });
     }
 };

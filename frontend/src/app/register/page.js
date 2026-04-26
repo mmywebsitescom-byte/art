@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { signInWithPopup } from "firebase/auth";
+import { signInWithPopup, createUserWithEmailAndPassword } from "firebase/auth";
 import { auth, googleProvider } from "../../lib/firebase";
 
 export default function Register() {
@@ -14,46 +14,41 @@ export default function Register() {
     try {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
+      const token = await user.getIdToken();
+      localStorage.setItem("token", token);
       
-      const res = await fetch(`/api/auth/google`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          email: user.email, 
-          username: user.displayName || user.email.split('@')[0]
-        })
+      // Sync profile to DB
+      await fetch('/api/auth/profile', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'x-auth-token': token },
+        body: JSON.stringify({ role: 'student', source: 'google' })
       });
       
-      const data = await res.json();
-      if (data.token) {
-        localStorage.setItem("token", data.token);
-        window.location.href = "/";
-      } else {
-        alert(data.msg || "Google signup failed");
-      }
+      window.location.href = "/";
     } catch (err) {
       console.error(err);
-      alert("Google signup error");
+      alert("Google signup error: " + err.message);
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`/api/auth/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, email, password, role, source })
+      const result = await createUserWithEmailAndPassword(auth, email, password);
+      const user = result.user;
+      const token = await user.getIdToken();
+      localStorage.setItem("token", token);
+      
+      // Update the MongoDB user profile with the form fields
+      await fetch('/api/auth/profile', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'x-auth-token': token },
+        body: JSON.stringify({ username, role, source })
       });
-      const data = await res.json();
-      if (data.token) {
-        localStorage.setItem("token", data.token);
-        window.location.href = "/";
-      } else {
-        alert(data.msg || "Registration failed");
-      }
+      
+      window.location.href = "/";
     } catch (err) {
-      alert("Server error");
+      alert("Registration failed: " + err.message);
     }
   };
 

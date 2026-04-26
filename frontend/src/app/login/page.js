@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { signInWithPopup } from "firebase/auth";
+import { signInWithPopup, signInWithEmailAndPassword } from "firebase/auth";
 import { auth, googleProvider } from "../../lib/firebase";
 
 export default function Login() {
@@ -11,46 +11,29 @@ export default function Login() {
     try {
       const result = await signInWithPopup(auth, googleProvider);
       const user = result.user;
+      const token = await user.getIdToken();
+      localStorage.setItem("token", token);
       
-      const res = await fetch(`/api/auth/google`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          email: user.email, 
-          username: user.displayName || user.email.split('@')[0]
-        })
-      });
+      // Make a dummy call to /me just to trigger MongoDB sync if it's the first time
+      await fetch('/api/auth/me', { headers: { 'x-auth-token': token } });
       
-      const data = await res.json();
-      if (data.token) {
-        localStorage.setItem("token", data.token);
-        window.location.href = "/";
-      } else {
-        alert(data.msg || "Google login failed");
-      }
+      window.location.href = "/";
     } catch (err) {
       console.error(err);
-      alert("Google login error");
+      alert("Google login error: " + err.message);
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(`/api/auth/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
-      });
-      const data = await res.json();
-      if (data.token) {
-        localStorage.setItem("token", data.token);
-        window.location.href = "/";
-      } else {
-        alert(data.msg || "Login failed");
-      }
+      const result = await signInWithEmailAndPassword(auth, email, password);
+      const user = result.user;
+      const token = await user.getIdToken();
+      localStorage.setItem("token", token);
+      window.location.href = "/";
     } catch (err) {
-      alert("Server error");
+      alert("Login failed: " + err.message);
     }
   };
 

@@ -94,7 +94,7 @@ exports.getMe = async (req, res) => {
 };
 
 exports.updateProfile = async (req, res) => {
-    const { username, role, bio, location } = req.body;
+    const { username, role, bio, location, source } = req.body;
     try {
         let user = await User.findById(req.user.id);
         if (!user) return res.status(404).json({ msg: 'User not found' });
@@ -110,6 +110,7 @@ exports.updateProfile = async (req, res) => {
         if (role) user.role = role;
         if (bio !== undefined) user.bio = bio;
         if (location !== undefined) user.location = location;
+        if (source !== undefined) user.source = source;
 
         await user.save();
         res.json(user);
