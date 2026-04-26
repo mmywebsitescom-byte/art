@@ -29,7 +29,10 @@ module.exports = async function(req, res, next) {
         req.user = { id: user.id };
         next();
     } catch (err) {
-        console.error('Firebase Auth Error:', err.message);
-        res.status(401).json({ msg: 'Token is not valid' });
+        console.error('Auth Middleware Error:', err.message);
+        if (err.code && err.code.startsWith('auth/')) {
+            return res.status(401).json({ msg: 'Token is not valid' });
+        }
+        res.status(500).json({ msg: 'Server error: ' + err.message });
     }
 };
