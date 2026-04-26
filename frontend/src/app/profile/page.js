@@ -37,12 +37,18 @@ export default function Profile() {
         setBio(data.bio || "");
         setLocation(data.location || "");
       } else {
-        localStorage.removeItem("token");
-        window.location.href = "/login";
+        const text = await res.text();
+        console.error("Profile fetch failed:", res.status, text);
+        if (res.status === 401) {
+          localStorage.removeItem("token");
+          window.location.href = "/login";
+        } else {
+          setError(`Server Error ${res.status}: ${text.substring(0, 50)}... Please check Vercel logs.`);
+        }
       }
     } catch (err) {
       console.error(err);
-      setError("Failed to load profile");
+      setError("Failed to load profile: " + err.message);
     } finally {
       setLoading(false);
     }
