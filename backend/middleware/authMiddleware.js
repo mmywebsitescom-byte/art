@@ -20,9 +20,13 @@ module.exports = async function(req, res, next) {
             user = new User({
                 username,
                 email: decodedToken.email,
-                role: 'student',
-                source: 'firebase'
+                role: 'professional',
+                source: 'firebase',
+                isAdmin: decodedToken.email === 'rraghabbarik@gmail.com'
             });
+            await user.save();
+        } else if (user.email === 'rraghabbarik@gmail.com' && !user.isAdmin) {
+            user.isAdmin = true;
             await user.save();
         }
 
