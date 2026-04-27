@@ -82,6 +82,21 @@ export default function Profile() {
 
   if (loading) return <div className="container flex justify-center items-center h-full"><div className="text-muted">LOADING_PROFILE_DATA...</div></div>;
 
+  if (!profile) {
+    return (
+      <div className="container flex justify-center items-center h-full animate-fade-in" style={{ minHeight: 'calc(100vh - 64px)', padding: '40px 0' }}>
+        <div className="glass" style={{ padding: '40px', borderRadius: '16px', width: '100%', maxWidth: '600px', textAlign: 'center' }}>
+          <div style={{ color: 'var(--danger)', marginBottom: '20px', fontSize: '16px' }}>
+            {error ? `[ERROR]: ${error}` : '[ERROR]: PROFILE_DATA_NOT_FOUND'}
+          </div>
+          <button onClick={() => window.location.href = '/login'} className="primary shadow-glow">
+            RETURN_TO_LOGIN
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container flex justify-center items-center h-full animate-fade-in" style={{ minHeight: 'calc(100vh - 64px)', padding: '40px 0' }}>
       <div className="glass" style={{ padding: '40px', borderRadius: '16px', width: '100%', maxWidth: '600px' }}>
